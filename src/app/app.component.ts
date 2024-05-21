@@ -1,9 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { UploadService } from './upload.service';
+import { UploadService } from './services/upload.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HttpErrorResponse, HttpEventType } from '@angular/common/http';
+import { HttpErrorResponse } from '@angular/common/http';
 import { last } from 'rxjs';
 
 @Component({
@@ -11,15 +11,14 @@ import { last } from 'rxjs';
   standalone: true,
   imports: [RouterOutlet, CommonModule, FormsModule],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css',
 })
 export class AppComponent {
+  #uploadService = inject(UploadService);
+
   files: File[] = [];
   mainFileName: string = '';
   progress: number | null = null;
   response: string | null = null;
-
-  constructor(private uploadService: UploadService) {}
 
   onFileChange(event: any): void {
     this.files = Array.from(event.target.files);
@@ -27,7 +26,7 @@ export class AppComponent {
 
   onSubmit(): void {
     if (this.files.length > 0 && this.mainFileName) {
-      this.uploadService
+      this.#uploadService
         .uploadFiles(this.files, this.mainFileName)
         .pipe(last())
         .subscribe(

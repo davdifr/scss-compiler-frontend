@@ -28,13 +28,14 @@ export class UploadService {
       .post(this.API_URL, formData, {
         reportProgress: true,
         observe: 'events',
+        responseType: 'text',
       })
       .pipe(
         map((event: HttpEvent<any>) => {
           switch (event.type) {
             case HttpEventType.UploadProgress:
-              if (event.total === undefined) {
-                return { status: 'progress', message: 'Uploading...' };
+              if (!event.total) {
+                return { status: 'progress', message: 0 };
               }
               const progress = Math.round((100 * event.loaded) / event.total);
               return { status: 'progress', message: progress };

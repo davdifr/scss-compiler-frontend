@@ -2,47 +2,24 @@
   <h2>Upload SCSS Files</h2>
   <form (submit)="onSubmit()">
     <div class="form-group">
-      <label for="mainFile">Main SCSS File:</label>
-      <input
-        type="text"
-        id="mainFile"
-        [(ngModel)]="mainFileName"
-        name="mainFile"
-        class="form-control"
-        required
-      />
-    </div>
-
-    <div class="form-group">
       <label for="fileInput">Select SCSS Files:</label>
-      <input
-        type="file"
-        id="fileInput"
-        (change)="onFileChange($event)"
-        class="form-control"
-        multiple
-        required
-      />
+      <input type="file" (change)="onFileChange($event)" multiple required />
+    </div>
+    <div class="form-group">
+      <label for="mainFile">Main SCSS File:</label>
+      <input type="text" [(ngModel)]="mainFileName" name="mainFile" required />
     </div>
 
-    <button type="submit" class="btn btn-primary">Upload</button>
+    <button type="submit" [disabled]="files.length < 1 || !mainFileName">
+      Upload
+    </button>
   </form>
 
-  <div *ngIf="progress !== null" class="progress mt-3">
-    <div
-      class="progress-bar"
-      role="progressbar"
-      [style.width.%]="progress"
-      aria-valuenow="25"
-      aria-valuemin="0"
-      aria-valuemax="100"
-    >
-      {{ progress }}%
-    </div>
-  </div>
-
-  <div *ngIf="response" class="mt-3">
+  <!--  -->
+  @if (response) {
+  <div class="mt-3">
     <h3>Compiled CSS:</h3>
     <pre>{{ response }}</pre>
   </div>
+  }
 </div>

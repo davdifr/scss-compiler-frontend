@@ -1,10 +1,9 @@
+import { CommonModule } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { RouterOutlet } from '@angular/router';
 import { UploadService } from './services/upload.service';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { HttpErrorResponse } from '@angular/common/http';
-import { last } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -17,45 +16,37 @@ export class AppComponent {
 
   files: File[] = [];
   mainFileName: string = '';
-  progress: number | null = null;
-  response: string | null = null;
+  response: string = '';
 
-  onFileChange(event: any): void {
-    this.files = Array.from(event.target.files);
+  onFileChange(event: Event) {
+    const target = event.target as HTMLInputElement;
+    this.files = Array.from(target.files || []);
+
+    const targetFiles = ['main.scss', 'style.scss'];
+
+    for (const file of this.files) {
+      if (targetFiles.includes(file.name)) {
+        this.mainFileName = file.name;
+        break;
+      }
+    }
   }
 
-  onSubmit(): void {
+  onSubmit() {
+    // Check if files are selected and main file is set
     if (this.files.length > 0 && this.mainFileName) {
-      this.#uploadService
-        .uploadFiles(this.files, this.mainFileName)
-        .pipe(last())
-        .subscribe(
-          // (event: any) => {
-          //   this.response = event.body;
-          //   console.log('Upload event:', event.body);
-          // },
-          // (error) => {
-          //   console.error('Upload error:', error);
-          // }
-          {
-            next: (event: any) => {
-              console.log('Received event:', event);
-              this.response = event;
-              // if (event.type === HttpEventType.Response) {
-              //   this.response = event.body;
-              //   console.log('Server response:', this.response);
-              // }
-            },
-            error: (error: HttpErrorResponse) => {
-              console.error('Upload error:', error);
-            },
-            complete: () => {
-              console.log('Upload complete');
-            },
-          }
-        );
-    } else {
-      alert('Please select files and specify the main file.');
+      this.uploadFiles(this.files, this.mainFileName);
     }
+  }
+
+  private uploadFiles(files: File[], mainFile: string) {
+    this.#uploadService.uploadFiles(files, mainFile).subscribe({
+      next: (res: string) => {
+        this.response = res;
+      },
+      error: (error: HttpErrorResponse) => {
+        // TODO: Handle error
+      },
+    });
   }
 }

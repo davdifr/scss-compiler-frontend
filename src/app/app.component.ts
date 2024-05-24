@@ -4,11 +4,12 @@ import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterOutlet } from '@angular/router';
 import { UploadService } from './services/upload.service';
+import { DownloadFileComponent } from './components/download-file/download-file.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, CommonModule, FormsModule],
+  imports: [RouterOutlet, CommonModule, FormsModule, DownloadFileComponent],
   templateUrl: './app.component.html',
 })
 export class AppComponent {
@@ -24,10 +25,14 @@ export class AppComponent {
 
     const targetFiles = ['main.scss', 'style.scss'];
 
-    for (const file of this.files) {
-      if (targetFiles.includes(file.name)) {
-        this.mainFileName = file.name;
-        break;
+    if (this.files.length === 1) {
+      this.mainFileName = this.files[0].name;
+    } else {
+      for (const file of this.files) {
+        if (targetFiles.includes(file.name)) {
+          this.mainFileName = file.name;
+          break;
+        }
       }
     }
   }

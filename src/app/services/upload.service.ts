@@ -1,21 +1,14 @@
-import {
-  HttpClient,
-  HttpErrorResponse,
-  HttpEvent,
-  HttpEventType,
-} from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { catchError, map, Observable, throwError } from 'rxjs';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UploadService {
-  // #http = inject(HttpClient);
-
   private API_URL = 'https://scss-compiler.vercel.app/api/compile-scss';
 
-  constructor(private httpClient: HttpClient) {}
+  #http = inject(HttpClient);
 
   uploadFiles(files: File[], mainFile: string): Observable<string> {
     const formData: FormData = new FormData();
@@ -26,7 +19,7 @@ export class UploadService {
 
     formData.append('main', mainFile);
 
-    return this.httpClient.post(this.API_URL, formData, {
+    return this.#http.post(this.API_URL, formData, {
       responseType: 'text',
     });
   }
